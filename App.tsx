@@ -19,6 +19,7 @@ import { VISUALIZATION_DATA, SECTIONS } from './constants';
 import { Nav } from './components/Nav';
 import { ChartWrapper } from './components/ChartWrapper';
 import { CustomTooltip } from './components/CustomTooltip';
+import { MinshengMap } from './components/MinshengMap';
 
 const App: React.FC = () => {
   // Animation state for the intro
@@ -151,7 +152,7 @@ const App: React.FC = () => {
              </div>
         </div>
 
-        <div className="md:w-2/3 w-full">
+        <div className="md:w-2/3 w-full flex flex-col gap-8">
             <ChartWrapper title="Poverty Reduction & Urbanization (2012-2020)">
                 <ResponsiveContainer width="100%" height="100%">
                     <ComposedChart data={VISUALIZATION_DATA.poverty} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
@@ -184,6 +185,11 @@ const App: React.FC = () => {
                         />
                     </ComposedChart>
                 </ResponsiveContainer>
+            </ChartWrapper>
+            <ChartWrapper title="东西部帮扶项目流向地图">
+              <div style={{ width: '100%', height: 600 }}>
+                <MinshengMap />
+              </div>
             </ChartWrapper>
         </div>
       </section>
