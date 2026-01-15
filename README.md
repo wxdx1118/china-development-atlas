@@ -13,7 +13,12 @@ china-development-atlas/
 ├── metadata.json            # 项目描述信息
 ├── README.md                # 项目说明文档
 ├── .env.local               # 环境变量配置（可选）
+├── data/                    # 数据目录
+├── public/                  # 数据目录
 └── components/              # 复用组件目录
+   ├── BubbleChart.tsx      # 气泡图组件
+   ├── GaokaoBarRace.tsx    # 动态直方图
+   ├── MinshengMap.tsx      # 流向地图
    ├── ChartWrapper.tsx     # 图表容器组件
    ├── CustomTooltip.tsx    # 图表自定义提示框
    └── Nav.tsx              # 页面导航栏
