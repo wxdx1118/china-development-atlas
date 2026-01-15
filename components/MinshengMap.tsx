@@ -1,6 +1,10 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as echarts from 'echarts';
 import { MINSHENG_HELP_DATA, MINSHENG_GEO_COORD_MAP } from '../constants';
+
+// 全局状态存储地图的缩放级别和中心点
+let mapZoom: number = 1.8; // 初始缩放级别放大50%（默认1.2 * 1.5 = 1.8）
+let mapCenter: [number, number] = [104.195397, 35.86166]; // 默认中心点
 
 const getLinesData = () => {
   const linesData = [];
@@ -47,14 +51,21 @@ export const MinshengMap: React.FC = () => {
         echarts.registerMap('china', geoJson);
         if (!chartRef.current) return;
         chartInstance.current = echarts.init(chartRef.current);
+        
+        // 添加地图事件监听，保存地图状态
+        const saveMapState = () => {
+          const option = chartInstance.current.getOption();
+          if (option && option.geo && option.geo[0]) {
+            const geo = option.geo[0];
+            mapZoom = geo.zoom || 1.2;
+            mapCenter = geo.center || [104.195397, 35.86166];
+          }
+        };
+        
+        // 监听地图缩放和拖拽事件
+        chartInstance.current.on('georoam', saveMapState);
+        
         const option = {
-      title: {
-        text: '东西部帮扶项目流向地图',
-        left: 'center',
-        textStyle: { fontSize: 22, fontWeight: 'bold', color: '#2d3748' },
-        subtext: '鼠标悬浮/点击流向线查看帮扶项目',
-        subtextStyle: { fontSize: 14, color: '#718096' },
-      },
       tooltip: {
         trigger: 'item',
         padding: 12,
@@ -71,7 +82,8 @@ export const MinshengMap: React.FC = () => {
       geo: {
         map: 'china',
         roam: true,
-        zoom: 1.2,
+        zoom: mapZoom, // 使用保存的缩放级别
+        center: mapCenter, // 使用保存的中心点
         label: { show: true, fontSize: 12, color: '#2d3748' },
         itemStyle: { areaColor: '#e8f4f8', borderColor: '#4299e1', borderWidth: 2 },
         emphasis: { itemStyle: { areaColor: '#bbdefb' }, label: { color: '#1a202c' } },
@@ -115,15 +127,9 @@ export const MinshengMap: React.FC = () => {
           emphasis: { symbolSize: (val: number[]) => val[2] + 5 },
         },
       ],
+      // 移除图例
       legend: {
-        show: true,
-        orient: 'horizontal',
-        left: 'center',
-        bottom: '10px',
-        data: [
-          { name: '东部省份', icon: 'circle', textStyle: { color: '#e53935' } },
-          { name: '帮扶市县', icon: 'circle', textStyle: { color: '#1e88e5' } },
-        ],
+        show: false
       },
         };
         chartInstance.current.setOption(option);
@@ -132,11 +138,19 @@ export const MinshengMap: React.FC = () => {
     return () => {
       isMounted = false;
       if (chartInstance.current) {
+        // 保存地图状态
+        const option = chartInstance.current.getOption();
+        if (option && option.geo && option.geo[0]) {
+          const geo = option.geo[0];
+          mapZoom = geo.zoom || 1.2;
+          mapCenter = geo.center || [104.195397, 35.86166];
+        }
+        
         chartInstance.current.dispose();
         window.removeEventListener('resize', chartInstance.current.resize);
       }
     };
   }, []);
 
-  return <div ref={chartRef} style={{ width: '100%', height: '600px', borderRadius: 8, boxShadow: '0 2px 12px rgba(0,0,0,0.1)' }} />;
+  return <div ref={chartRef} style={{ width: '100%', height: '100%', borderRadius: 8, boxShadow: '0 2px 12px rgba(0,0,0,0.1)' }} />;
 };

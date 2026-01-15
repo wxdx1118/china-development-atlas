@@ -1,0 +1,56 @@
+[
+  {
+    "year": "2012",
+    "totalPopulation": 135922,
+    "urbanPopulation": 72175,
+    "urbanizationRate": 53.1
+  },
+  {
+    "year": "2013",
+    "totalPopulation": 136726,
+    "urbanPopulation": 74502,
+    "urbanizationRate": 54.5
+  },
+  {
+    "year": "2014",
+    "totalPopulation": 137646,
+    "urbanPopulation": 76738,
+    "urbanizationRate": 55.8
+  },
+  {
+    "year": "2015",
+    "totalPopulation": 138326,
+    "urbanPopulation": 79302,
+    "urbanizationRate": 57.3
+  },
+  {
+    "year": "2016",
+    "totalPopulation": 139232,
+    "urbanPopulation": 81924,
+    "urbanizationRate": 58.8
+  },
+  {
+    "year": "2017",
+    "totalPopulation": 140011,
+    "urbanPopulation": 84343,
+    "urbanizationRate": 60.2
+  },
+  {
+    "year": "2018",
+    "totalPopulation": 140541,
+    "urbanPopulation": 86433,
+    "urbanizationRate": 61.5
+  },
+  {
+    "year": "2019",
+    "totalPopulation": 141008,
+    "urbanPopulation": 88426,
+    "urbanizationRate": 62.7
+  },
+  {
+    "year": "2020",
+    "totalPopulation": 141212,
+    "urbanPopulation": 90220,
+    "urbanizationRate": 63.9
+  }
+]
