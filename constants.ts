@@ -155,15 +155,27 @@ export const VISUALIZATION_DATA: AppData = {
     { year: '2024', expenditure: 363.26, patents: 583 },
   ],
   life: [
-    { year: '1981', expectancy: 67.8 },
-    { year: '1990', expectancy: 68.6 },
-    { year: '2000', expectancy: 71.4 },
-    { year: '2010', expectancy: 74.8 },
-    { year: '2015', expectancy: 76.3 },
-    { year: '2019', expectancy: 77.3 },
-    { year: '2021', expectancy: 78.2 },
-    { year: '2023', expectancy: 78.6 },
-  ]
+    { year: '2005', expectancy: 0.52 },
+    { year: '2008', expectancy: 0.40 },
+    { year: '2011', expectancy: 0.35 },
+    { year: '2014', expectancy: 0.32 },
+    { year: '2017', expectancy: 0.29 },
+    { year: '2020', expectancy: 0.28 },
+    { year: '2024', expectancy: 0.28 },
+  ],
+  // 健康保障双环形对比图数据
+  healthExpenditure: {
+    2009: [
+      { name: '政府卫生支出', value: 27.5, amount: 4816.26, color: '#3b82f6' },
+      { name: '社会卫生支出', value: 35.1, amount: 6154.49, color: '#10b981' },
+      { name: '个人现金支出', value: 37.4, amount: 6571.16, color: '#f59e0b' }
+    ],
+    2024: [
+      { name: '政府卫生支出', value: 24.9, amount: 22608.01, color: '#3b82f6' },
+      { name: '社会卫生支出', value: 47.6, amount: 43280.01, color: '#10b981' },
+      { name: '个人现金支出', value: 27.5, amount: 25007.53, color: '#f59e0b' }
+    ]
+  }
 };
 
 export const SECTIONS = {
@@ -200,14 +212,47 @@ export const SECTIONS = {
   TECH: {
     id: 'tech',
     title: '创新驱动',
-    subtitle: '科技自立自强支撑高质量发展',
-    desc: '创新是引领发展的第一动力。R&D经费投入强度的持续加大与专利申请量的攀升，反映了中国从“要素驱动”向“创新驱动”的战略转型。',
-    desc2: '数据来源：中国国家统计局 (https://data.stats.gov.cn/)年度科技数据',
+    // 轮播图数据（包含研发支出与专利申请量图表和创新驱动全链路桑基图）
+    carousel: [
+      {
+        id: 1,
+        title: '研发支出与专利申请量',
+        subtitle: '科技自立自强支撑高质量发展',
+        desc: '创新是引领发展的第一动力。R&D经费投入强度的持续加大与专利申请量的攀升，反映了中国从“要素驱动”向“创新驱动”的战略转型。',
+        desc2: '数据来源：中国国家统计局 (https://data.stats.gov.cn/)年度科技数据',
+        type: 'techChart'
+      },
+      {
+        id: 2,
+        title: '省域创新发展水平',
+        subtitle: '研发投入、创新产出与经济发展关联分析',
+        desc: '气泡图同时展示了15个代表性省份的研发投入强度（X轴）、高技术产业增加值占比（Y轴）和人均GDP（气泡大小），不同颜色代表不同区域（东部/中部/西部/东北）。通过气泡图可以直观分析创新投入与产出的关联关系，以及创新驱动下的经济发展水平差异。',
+        desc2: '数据来源：国家统计局2024年统计公报、各省统计年鉴、科技部区域创新能力报告',
+        type: 'bubbleChart'
+      }
+    ]
   },
   LIFE: {
     id: 'life',
     title: '健康中国',
-    subtitle: '人民健康是民族昌盛和国家富强的重要标志',
-    desc: '随着医疗卫生体系的完善，人均预期寿命显著提高，这是社会发展最直观的温度计。',
+    // 轮播图数据（包含个人卫生支出变化图和健康保障主题双环形对比图）
+    carousel: [
+      {
+        id: 1,
+        title: '个人卫生支出变化',
+        subtitle: '人民健康是民族昌盛和国家富强的重要标志',
+        desc: '个人现金卫生支出占比的变化反映了医疗卫生保障体系的完善程度。数据显示，我国个人现金卫生支出占卫生总费用的比例从2005年的52%下降到2024年的28%，居民医疗负担明显减轻。',
+        desc2: '数据来源：中国国家统计局 (https://data.stats.gov.cn/)年度卫生健康数据',
+        type: 'lifeChart'
+      },
+      {
+        id: 2,
+        title: '新医改15年：健康保障体系变革',
+        subtitle: '2009年新医改政策影响深远',
+        desc: '2009年3月，《中共中央国务院关于深化医药卫生体制改革的意见》颁布，开启了中国医改的新纪元。15年来，我国卫生总费用从1.75万亿增至9万亿，增长4倍多。核心变化：个人现金支出占比从37.4%降至27.5%，下降9.9个百分点，提前实现"到2030年降至25%左右"的健康中国规划目标；社会卫生支出（医保）占比从35.1%提升至47.6%，成为医疗费用第一大支付方，全民医保体系的支柱作用凸显；政府支出占比保持稳定，体现了财政投入的持续与精准。',
+        desc2: '数据来源：中国国家统计局2009-2024年卫生总费用核算数据',
+        type: 'healthRingChart'
+      }
+    ]
   }
 };

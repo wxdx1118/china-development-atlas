@@ -12,6 +12,9 @@ import {
   Line,
   LineChart,
   Legend,
+  PieChart,
+  Pie,
+  Cell,
 } from 'recharts';
 import { Play, Pause, ChevronDown } from 'lucide-react';
 
@@ -20,6 +23,7 @@ import { Nav } from './components/Nav';
 import { ChartWrapper } from './components/ChartWrapper';
 import { CustomTooltip } from './components/CustomTooltip';
 import { MinshengMap } from './components/MinshengMap';
+import { BubbleChart } from './components/BubbleChart';
 
 const App: React.FC = () => {
   // Animation state for the intro
@@ -27,6 +31,10 @@ const App: React.FC = () => {
   const [animationProgress, setAnimationProgress] = useState(100);
   // Carousel state for west-east cooperation
   const [currentSlide, setCurrentSlide] = useState(0);
+  // Carousel state for tech section
+  const [currentTechSlide, setCurrentTechSlide] = useState(0);
+  // Carousel state for life section
+  const [currentLifeSlide, setCurrentLifeSlide] = useState(0);
 
   useEffect(() => {
     setShowIntro(true);
@@ -261,47 +269,116 @@ const App: React.FC = () => {
       <section id={SECTIONS.TECH.id} className="min-h-screen py-24 px-4 md:px-12 max-w-7xl mx-auto flex flex-col md:flex-row gap-12 items-center">
         <div className="md:w-1/3 space-y-6">
             <h2 className="text-3xl font-bold text-white border-l-8 border-blue-600 pl-4">{SECTIONS.TECH.title}</h2>
-            <h3 className="text-xl text-blue-400 font-serif">{SECTIONS.TECH.subtitle}</h3>
+            <h3 className="text-xl text-blue-400 font-serif">{SECTIONS.TECH.carousel[currentTechSlide].subtitle}</h3>
             <p className="text-slate-400 leading-relaxed text-justify">
-                {SECTIONS.TECH.desc}
+                {SECTIONS.TECH.carousel[currentTechSlide].desc}
             </p>
             <p className="text-slate-500 text-sm italic">
-                {SECTIONS.TECH.desc2}
+                {SECTIONS.TECH.carousel[currentTechSlide].desc2}
             </p>
+            
+            {/* 轮播指示器 */}
+            <div className="flex gap-2 justify-center">
+                {SECTIONS.TECH.carousel.map((item, index) => (
+                    <button
+                        key={item.id}
+                        className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentTechSlide ? 'bg-blue-500 w-8' : 'bg-slate-500 hover:bg-slate-400'}`}
+                        onClick={() => setCurrentTechSlide(index)}
+                        aria-label={`查看幻灯片 ${index + 1}`}
+                    />
+                ))}
+            </div>
         </div>
 
-        <div className="md:w-2/3 w-full">
-            <ChartWrapper title="研发支出与专利申请量 (2012-2024)">
-                 <ResponsiveContainer width="100%" height="100%">
-                    <ComposedChart data={VISUALIZATION_DATA.tech} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                        <CartesianGrid stroke="#334155" vertical={false} strokeDasharray="3 3" />
-                        <XAxis dataKey="year" stroke="#94a3b8" />
-                        <YAxis yAxisId="left" stroke="#8884d8" />
-                        <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
-                        <Tooltip content={<CustomTooltip />} />
-                        <Legend />
-                        <Area 
-                            yAxisId="left"
-                            type="monotone" 
-                            dataKey="expenditure" 
-                            name="研究与试验发展经费支出 (百亿/元)" 
-                            unit="百亿元"
-                            stroke="#8884d8" 
-                            fill="#8884d8" 
-                            fillOpacity={0.3}
-                        />
-                        <Bar 
-                            yAxisId="right"
-                            dataKey="patents" 
-                            name="专利申请数 (万/项)" 
-                            unit="万"
-                            barSize={20} 
-                            fill="#82ca9d" 
-                            radius={[4, 4, 0, 0]}
-                        />
-                    </ComposedChart>
-                </ResponsiveContainer>
-            </ChartWrapper>
+        {/* 轮播图区域 */}
+        <div className="md:w-2/3 w-full relative bg-slate-800/50 rounded-2xl overflow-hidden border border-slate-700">
+            {/* 轮播内容 */}
+            <div className="h-[500px]">
+                {SECTIONS.TECH.carousel.map((item, index) => (
+                    <div 
+                        key={item.id} 
+                        className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${index === currentTechSlide ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+                        style={{
+                            pointerEvents: index === currentTechSlide ? 'auto' : 'none',
+                            zIndex: index === currentTechSlide ? 10 : 1
+                        }}
+                    >
+                        {/* 研发支出与专利申请量图表 */}
+                        {item.type === 'techChart' && (
+                            <div className="glass-panel p-6 rounded-xl shadow-lg w-full h-full flex flex-col transition-all duration-300 hover:shadow-blue-900/20">
+                                <h3 className="text-xl font-bold mb-6 text-blue-500 border-l-4 border-blue-600 pl-3">
+                                    {item.title}
+                                </h3>
+                                <div className="flex-1 w-full min-h-0">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <ComposedChart data={VISUALIZATION_DATA.tech} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                                            <CartesianGrid stroke="#334155" vertical={false} strokeDasharray="3 3" />
+                                            <XAxis dataKey="year" stroke="#94a3b8" />
+                                            <YAxis yAxisId="left" stroke="#8884d8" />
+                                            <YAxis yAxisId="right" orientation="right" stroke="#82ca9d" />
+                                            <Tooltip content={<CustomTooltip />} />
+                                            <Legend />
+                                            <Area 
+                                                yAxisId="left"
+                                                type="monotone" 
+                                                dataKey="expenditure" 
+                                                name="研究与试验发展经费支出 (百亿/元)" 
+                                                unit="百亿元"
+                                                stroke="#8884d8" 
+                                                fill="#8884d8" 
+                                                fillOpacity={0.3}
+                                            />
+                                            <Bar 
+                                                yAxisId="right"
+                                                dataKey="patents" 
+                                                name="专利申请数 (万/项)" 
+                                                unit="万"
+                                                barSize={20} 
+                                                fill="#82ca9d" 
+                                                radius={[4, 4, 0, 0]}
+                                            />
+                                        </ComposedChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+                        )}
+                        
+                        {/* 创新驱动全链路桑基图 */}
+                        {item.type === 'bubbleChart' && (
+                            <div className="glass-panel p-6 rounded-xl shadow-lg w-full h-full flex flex-col transition-all duration-300 hover:shadow-blue-900/20">
+                                <h3 className="text-xl font-bold mb-6 text-blue-500 border-l-4 border-blue-600 pl-3">
+                                    {item.title}
+                                </h3>
+                                <div className="flex-1 w-full min-h-0 flex items-center justify-center">
+                      <BubbleChart />
+                    </div>
+                            </div>
+                        )}
+                    </div>
+                ))}
+            </div>
+            
+            {/* 左右切换按钮 */}
+            <button 
+                className="absolute left-4 top-1/2 -translate-y-1/2 bg-slate-800/80 hover:bg-slate-700 text-white p-2 rounded-full border border-slate-600 transition-all"
+                onClick={() => setCurrentTechSlide((prev) => (prev === 0 ? SECTIONS.TECH.carousel.length - 1 : prev - 1))}
+                aria-label="上一张幻灯片"
+                style={{ zIndex: 20 }}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m15 18-6-6 6-6"/>
+                </svg>
+            </button>
+            <button 
+                className="absolute right-4 top-1/2 -translate-y-1/2 bg-slate-800/80 hover:bg-slate-700 text-white p-2 rounded-full border border-slate-600 transition-all"
+                onClick={() => setCurrentTechSlide((prev) => (prev === SECTIONS.TECH.carousel.length - 1 ? 0 : prev + 1))}
+                aria-label="下一张幻灯片"
+                style={{ zIndex: 20 }}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m9 18 6-6-6-6"/>
+                </svg>
+            </button>
         </div>
       </section>
 
@@ -309,42 +386,205 @@ const App: React.FC = () => {
        <section id={SECTIONS.LIFE.id} className="min-h-screen py-24 px-4 md:px-12 max-w-7xl mx-auto flex flex-col md:flex-row-reverse gap-12 items-center">
         <div className="md:w-1/3 space-y-6">
             <h2 className="text-3xl font-bold text-white border-l-8 border-green-600 pl-4">{SECTIONS.LIFE.title}</h2>
-            <h3 className="text-xl text-green-400 font-serif">{SECTIONS.LIFE.subtitle}</h3>
+            <h3 className="text-xl text-green-400 font-serif">{SECTIONS.LIFE.carousel[currentLifeSlide].subtitle}</h3>
             <p className="text-slate-400 leading-relaxed text-justify">
-                {SECTIONS.LIFE.desc}
+                {SECTIONS.LIFE.carousel[currentLifeSlide].desc}
             </p>
+            <p className="text-slate-500 text-sm italic">
+                {SECTIONS.LIFE.carousel[currentLifeSlide].desc2}
+            </p>
+            
+            {/* 轮播指示器 */}
+            <div className="flex gap-2 justify-center">
+                {SECTIONS.LIFE.carousel.map((item, index) => (
+                    <button
+                        key={item.id}
+                        className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentLifeSlide ? 'bg-green-500 w-8' : 'bg-slate-500 hover:bg-slate-400'}`}
+                        onClick={() => setCurrentLifeSlide(index)}
+                        aria-label={`查看第 ${index + 1} 张幻灯片`}
+                    />
+                ))}
+            </div>
         </div>
 
-        <div className="md:w-2/3 w-full">
-            <ChartWrapper title="Average Life Expectancy (Years)">
-                 <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={VISUALIZATION_DATA.life} margin={{ top: 20, right: 30, left: 20, bottom: 10 }}>
-                        <CartesianGrid stroke="#334155" strokeDasharray="3 3" />
-                        <XAxis dataKey="year" stroke="#94a3b8" />
-                        <YAxis domain={[60, 85]} stroke="#94a3b8" />
-                        <Tooltip content={<CustomTooltip />} />
-                        <Legend />
-                        <Line 
-                            type="monotone" 
-                            dataKey="expectancy" 
-                            name="Life Expectancy" 
-                            unit="yrs"
-                            stroke="#10b981" 
-                            strokeWidth={4} 
-                            dot={{r: 6, fill: "#10b981", stroke: "#0f172a", strokeWidth: 2}}
-                            activeDot={{r: 8}}
-                            animationDuration={3000}
-                        />
-                    </LineChart>
-                </ResponsiveContainer>
-            </ChartWrapper>
+        {/* 轮播图区域 */}
+        <div className="md:w-2/3 w-full relative bg-slate-800/50 rounded-2xl overflow-hidden border border-slate-700">
+            {/* 轮播内容 */}
+            <div className="h-[500px]">
+                {SECTIONS.LIFE.carousel.map((item, index) => (
+                    <div 
+                        key={item.id} 
+                        className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${index === currentLifeSlide ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+                        style={{ pointerEvents: index === currentLifeSlide ? 'auto' : 'none', zIndex: index === currentLifeSlide ? 10 : 1 }}
+                    >
+                        {/* 个人现金卫生支出占比变化图 */}
+                        {item.type === 'lifeChart' && (
+                            <div className="glass-panel p-6 rounded-xl shadow-lg w-full h-full flex flex-col transition-all duration-300 hover:shadow-green-900/20">
+                                <h3 className="text-xl font-bold mb-6 text-green-500 border-l-4 border-green-600 pl-3">{item.title}</h3>
+                                <div className="flex-1 w-full">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <LineChart data={VISUALIZATION_DATA.life} margin={{ top: 20, right: 30, left: 20, bottom: 10 }}>
+                                            <CartesianGrid stroke="#334155" strokeDasharray="3 3" />
+                                            <XAxis dataKey="year" stroke="#94a3b8" />
+                                            <YAxis domain={[0.2, 0.6]} tickFormatter={(value) => (value * 100) + '%'} stroke="#94a3b8" />
+                                            <Tooltip content={<CustomTooltip />} />
+                                            <Legend />
+                                            <Line 
+                                                type="monotone" 
+                                                dataKey="expectancy" 
+                                                name="个人现金卫生支出占比" 
+                                                unit="%"
+                                                stroke="#10b981" 
+                                                strokeWidth={4} 
+                                                dot={{r: 6, fill: "#10b981", stroke: "#0f172a", strokeWidth: 2}}
+                                                activeDot={{r: 8}}
+                                                animationDuration={3000}
+                                            />
+                                        </LineChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+                        )}
+                        
+                        {/* 健康保障主题双环形对比图 */}
+                        {item.type === 'healthRingChart' && (
+                            <div className="glass-panel p-6 rounded-xl shadow-lg w-full h-full flex flex-col transition-all duration-300 hover:shadow-green-900/20">
+                                <h3 className="text-xl font-bold mb-6 text-green-500 border-l-4 border-green-600 pl-3">{item.title}</h3>
+                                <div className="flex-1 w-full flex flex-col items-center justify-center">
+                                    {/* 双环形图容器 */}
+                                    <div className="w-[400px] h-[400px]">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <PieChart>
+                                                {/* 2009年环形图（内层） */}
+                                                <Pie
+                                                    data={VISUALIZATION_DATA.healthExpenditure[2009]}
+                                                    cx="50%"
+                                                    cy="50%"
+                                                    labelLine={false}
+                                                    outerRadius={120}
+                                                    innerRadius={70}
+                                                    dataKey="value"
+                                                    nameKey="name"
+                                                    type="2009"
+                                                    label={false}
+                                                >
+                                                    {VISUALIZATION_DATA.healthExpenditure[2009].map((entry, index) => (
+                                                        <Cell key={`cell-2009-${index}`} fill={entry.color} stroke="#ffffff" strokeWidth={2} />
+                                                    ))}
+                                                </Pie>
+                                                {/* 中间分隔边框 */}
+                                                <Pie
+                                                    data={[{ name: 'border', value: 100 }]}
+                                                    cx="50%"
+                                                    cy="50%"
+                                                    outerRadius={120}
+                                                    innerRadius={120}
+                                                    dataKey="value"
+                                                >
+                                                    <Cell fill="none" stroke="#ffffff" strokeWidth={3} />
+                                                </Pie>
+                                                {/* 2024年环形图（外层） */}
+                                                <Pie
+                                                    data={VISUALIZATION_DATA.healthExpenditure[2024]}
+                                                    cx="50%"
+                                                    cy="50%"
+                                                    labelLine={false}
+                                                    outerRadius={160}
+                                                    innerRadius={110}
+                                                    dataKey="value"
+                                                    nameKey="name"
+                                                    type="2024"
+                                                    label={false}
+                                                >
+                                                    {VISUALIZATION_DATA.healthExpenditure[2024].map((entry, index) => (
+                                                        <Cell key={`cell-2024-${index}`} fill={entry.color} stroke="#ffffff" strokeWidth={2} />
+                                                    ))}
+                                                </Pie>
+                                                {/* 为两个环形图分别添加Tooltip */}
+                                                <Tooltip
+                                                    content={({ active, payload }) => {
+                                                        if (active && payload && payload.length) {
+                                                            // 通过payload的index判断是内层还是外层环形
+                                                            const isInner = payload[0].value === VISUALIZATION_DATA.healthExpenditure[2009].find(item => item.name === payload[0].name)?.value;
+                                                            const year = isInner ? '2009年' : '2024年';
+                                                            return (
+                                                                <div className="bg-gray-800 p-3 rounded-lg border border-gray-700 shadow-lg">
+                                                                    <p className="text-white font-medium">{year} {payload[0].name}</p>
+                                                                    <p className="text-green-400">{payload[0].value}%</p>
+                                                                </div>
+                                                            );
+                                                        }
+                                                        return null;
+                                                    }}
+                                                />
+                                            </PieChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                    
+                                    {/* 图例和总费用说明 */}
+                                    <div className="mt-8 flex flex-col items-center gap-4">
+                                        <div className="flex gap-8">
+                                            <div className="text-center">
+                                                <h4 className="text-lg text-white font-semibold">2009年</h4>
+                                                <p className="text-sm text-slate-400">卫生总费用：17541.92亿元</p>
+                                            </div>
+                                            <div className="text-center">
+                                                <h4 className="text-lg text-white font-semibold">2024年</h4>
+                                                <p className="text-sm text-slate-400">卫生总费用：90895.55亿元</p>
+                                            </div>
+                                        </div>
+                                        
+                                        {/* 添加图例 */}
+                                        <div className="flex flex-wrap justify-center gap-6 mt-4">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-4 h-4 rounded-full bg-blue-500"></div>
+                                                <span className="text-slate-300 text-sm">政府卫生支出</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-4 h-4 rounded-full bg-green-500"></div>
+                                                <span className="text-slate-300 text-sm">社会卫生支出</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-4 h-4 rounded-full bg-yellow-500"></div>
+                                                <span className="text-slate-300 text-sm">个人现金支出</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                ))}
+            </div>
+            
+            {/* 左右切换按钮 */}
+            <button 
+                className="absolute left-4 top-1/2 -translate-y-1/2 bg-slate-800/80 hover:bg-slate-700 text-white p-2 rounded-full border border-slate-600 transition-all"
+                onClick={() => setCurrentLifeSlide((prev) => (prev === 0 ? SECTIONS.LIFE.carousel.length - 1 : prev - 1))}
+                aria-label="上一张"
+                style={{ zIndex: 20 }}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m15 18-6-6 6-6"/>
+                </svg>
+            </button>
+            <button 
+                className="absolute right-4 top-1/2 -translate-y-1/2 bg-slate-800/80 hover:bg-slate-700 text-white p-2 rounded-full border border-slate-600 transition-all"
+                onClick={() => setCurrentLifeSlide((prev) => (prev === SECTIONS.LIFE.carousel.length - 1 ? 0 : prev + 1))}
+                aria-label="下一张"
+                style={{ zIndex: 20 }}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m9 18 6-6-6-6"/>
+                </svg>
+            </button>
         </div>
       </section>
 
       {/* Footer */}
       <footer className="py-12 text-center text-slate-600 border-t border-slate-800 bg-slate-950">
-        <p className="text-sm">Data Sources: National Bureau of Statistics of China, The World Bank.</p>
-        <p className="text-xs mt-2 opacity-50">© 2024 China Development Atlas Project</p>
+        <p className="text-sm">数据来源：中国国家统计局，世界银行。</p>
+
       </footer>
     </div>
   );
