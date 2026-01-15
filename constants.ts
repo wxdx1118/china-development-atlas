@@ -166,14 +166,14 @@ export const VISUALIZATION_DATA: AppData = {
   // 健康保障双环形对比图数据
   healthExpenditure: {
     2009: [
-      { name: '政府卫生支出', value: 27.5, amount: 4816.26, color: '#3b82f6' },
+      { name: '政府卫生支出', value: 27.5, amount: 4816.26, color: '#2db3ecff' },
       { name: '社会卫生支出', value: 35.1, amount: 6154.49, color: '#10b981' },
-      { name: '个人现金支出', value: 37.4, amount: 6571.16, color: '#f59e0b' }
+      { name: '个人现金支出', value: 37.4, amount: 6571.16, color: '#fbbf24' }
     ],
     2024: [
-      { name: '政府卫生支出', value: 24.9, amount: 22608.01, color: '#3b82f6' },
+      { name: '政府卫生支出', value: 24.9, amount: 22608.01, color: '#2db3ecff' },
       { name: '社会卫生支出', value: 47.6, amount: 43280.01, color: '#10b981' },
-      { name: '个人现金支出', value: 27.5, amount: 25007.53, color: '#f59e0b' }
+      { name: '个人现金支出', value: 27.5, amount: 25007.53, color: '#fbbf24' }
     ]
   }
 };
@@ -254,5 +254,12 @@ export const SECTIONS = {
         type: 'healthRingChart'
       }
     ]
+  },
+  EDU: {
+    id: 'edu',
+    title: '教育质量',
+    subtitle: '中国特色现代教育考试招生制度基本建立',
+    desc: '',
+    desc2: '数据来源：中国教育在线（https://gaokao.eol.cn/）、阳光高考信息平台（https://gaokao.chsi.com.cn/）',
   }
 };

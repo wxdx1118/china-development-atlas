@@ -1,5 +1,5 @@
 import React from 'react';
-import { ResponsiveContainer, ComposedChart, ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, Cell } from 'recharts';
+import { ResponsiveContainer, ComposedChart, ScatterChart, Scatter, XAxis, YAxis, ZAxis, Tooltip, Cell,Legend } from 'recharts';
 
 interface BubbleChartProps {
   width?: number;
@@ -44,42 +44,78 @@ const CustomBubbleTooltip = ({ active, payload }: any) => {
 
 export const BubbleChart: React.FC<BubbleChartProps> = ({ width = 900, height = 450 }) => {
   return (
-    <ResponsiveContainer width="100%" height="100%">
-      <ScatterChart
-        margin={{ top: 20, right: 30, bottom: 40, left: 80 }}
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <ScatterChart
+          margin={{ top: 20, right: 30, bottom: 40, left: 80 }}
+        >
+          <XAxis
+            dataKey="地方财政科技支出占比"
+            name="地方财政科技支出占比"
+            label={{ value: '地方财政科学技术支出占总支出比例（%）', position: 'insideBottomRight', offset: -20, fill: '#cbd5e1' }}
+            stroke="#94a3b8"
+            tick={{ fill: '#cbd5e1' }}
+          />
+          <YAxis
+            dataKey="规模以上工业企业R&D经费"
+            name="规模以上工业企业R&D经费"
+            label={{ 
+              value: '规模以上工业企业R&D经费(亿元)', 
+              angle: -90, 
+              position: 'outsideLeft', 
+              dx: -40, // 控制水平方向偏移，增加空间以显示完整标签
+              dy: 0,  // 控制垂直方向偏移
+              fill: '#cbd5e1' 
+            }}
+            stroke="#94a3b8"
+            tick={{ fill: '#cbd5e1' }}
+          />
+          <ZAxis
+            dataKey="人均GDP"
+            range={[200, 1200]}
+          />
+          <Tooltip content={<CustomBubbleTooltip />} />
+          <Scatter data={bubbleData}>
+            {bubbleData.map((entry, index) => (
+              <Cell key={`cell-${index}`} fill={entry["颜色"]} fillOpacity={0.7} stroke={entry["颜色"]} strokeWidth={2} />
+            ))}
+          </Scatter>
+        </ScatterChart>
+      </ResponsiveContainer>
+      {/* 自定义图例，绝对定位覆盖在图表右上角 */}
+      <div 
+        style={{
+          position: 'absolute',
+          top: 10,
+          right: 50,
+          zIndex: 100,
+          backgroundColor: 'rgba(30, 41, 59, 0.9)',
+          padding: '12px',
+          borderRadius: '8px',
+          border: '1px solid #334155',
+          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.3)'
+        }}
       >
-        <XAxis
-          dataKey="地方财政科技支出占比"
-          name="地方财政科技支出占比"
-          label={{ value: '地方财政科学技术支出占总支出比例（%）', position: 'insideBottomRight', offset: -20, fill: '#cbd5e1' }}
-          stroke="#94a3b8"
-          tick={{ fill: '#cbd5e1' }}
-        />
-        <YAxis
-          dataKey="规模以上工业企业R&D经费"
-          name="规模以上工业企业R&D经费"
-          label={{ 
-            value: '规模以上工业企业R&D经费(亿元)', 
-            angle: -90, 
-            position: 'outsideLeft', 
-            dx: -40, // 控制水平方向偏移，增加空间以显示完整标签
-            dy: 0,  // 控制垂直方向偏移
-            fill: '#cbd5e1' 
-          }}
-          stroke="#94a3b8"
-          tick={{ fill: '#cbd5e1' }}
-        />
-        <ZAxis
-          dataKey="人均GDP"
-          range={[300, 1000]}
-        />
-        <Tooltip content={<CustomBubbleTooltip />} />
-        <Scatter name="创新驱动气泡图" data={bubbleData}>
-          {bubbleData.map((entry, index) => (
-            <Cell key={`cell-${index}`} fill={entry["颜色"]} stroke="#0f172a" strokeWidth={1} />
-          ))}
-        </Scatter>
-      </ScatterChart>
-    </ResponsiveContainer>
+        {[
+          { name: '东部省份', color: '#3b82f6' },
+          { name: '中部省份', color: '#10b981' },
+          { name: '西部省份', color: '#f59e0b' },
+          { name: '东北省份', color: '#ef4444' }
+        ].map((entry, index) => (
+          <div key={`legend-item-${index}`} style={{ display: 'flex', alignItems: 'center', marginBottom: '4px' }}>
+            <div 
+              style={{ 
+                width: '12px', 
+                height: '12px', 
+                borderRadius: '50%', 
+                marginRight: '8px',
+                backgroundColor: entry.color 
+              }}
+            />
+            <span style={{ color: '#e2e8f0', fontSize: '12px' }}>{entry.name}</span>
+          </div>
+        ))}
+      </div>
+    </div>
   );
 };

@@ -24,11 +24,16 @@ import { ChartWrapper } from './components/ChartWrapper';
 import { CustomTooltip } from './components/CustomTooltip';
 import { MinshengMap } from './components/MinshengMap';
 import { BubbleChart } from './components/BubbleChart';
+import { GaokaoBarRace } from './components/GaokaoBarRace';
 
 const App: React.FC = () => {
   // Animation state for the intro
   const [showIntro, setShowIntro] = useState(false);
   const [animationProgress, setAnimationProgress] = useState(100);
+  // GaokaoBarRace
+  const [gaokaoPaused, setGaokaoPaused] = useState(false);
+  const [gaokaoIndex, setGaokaoIndex] = useState(0);
+  const [gaokaoLength, setGaokaoLength] = useState(0);
   // Carousel state for west-east cooperation
   const [currentSlide, setCurrentSlide] = useState(0);
   // Carousel state for tech section
@@ -452,7 +457,19 @@ const App: React.FC = () => {
                                 <h3 className="text-xl font-bold mb-6 text-green-500 border-l-4 border-green-600 pl-3">{item.title}</h3>
                                 <div className="flex-1 w-full flex flex-col items-center justify-center">
                                     {/* 双环形图容器 */}
-                                    <div className="w-[400px] h-[400px]">
+                                    <div className="w-[400px] h-[400px] relative">
+                                        {/* 图注：绝对布局在左上角，纵向排列 */}
+                                        <div className="absolute top-0 left-[-120px] p-4 rounded-lg z-10">
+                                            {VISUALIZATION_DATA.healthExpenditure[2024].map((entry, index) => (
+                                                <div key={`legend-${index}`} className="flex items-center mb-2">
+                                                    <div 
+                                                        className="w-3 h-3 rounded-full mr-2" 
+                                                        style={{ backgroundColor: entry.color }}
+                                                    />
+                                                    <span className="text-sm text-white">{entry.name}</span>
+                                                </div>
+                                            ))}
+                                        </div>
                                         <ResponsiveContainer width="100%" height="100%">
                                             <PieChart>
                                                 {/* 2009年环形图（内层） */}
@@ -461,15 +478,15 @@ const App: React.FC = () => {
                                                     cx="50%"
                                                     cy="50%"
                                                     labelLine={false}
-                                                    outerRadius={120}
-                                                    innerRadius={70}
+                                                    outerRadius={130}
+                                                    innerRadius={65}
                                                     dataKey="value"
                                                     nameKey="name"
                                                     type="2009"
                                                     label={false}
                                                 >
                                                     {VISUALIZATION_DATA.healthExpenditure[2009].map((entry, index) => (
-                                                        <Cell key={`cell-2009-${index}`} fill={entry.color} stroke="#ffffff" strokeWidth={2} />
+                                                        <Cell key={`cell-2009-${index}`} fill={entry.color} stroke="#ffffff99" strokeWidth={2} />
                                                     ))}
                                                 </Pie>
                                                 {/* 中间分隔边框 */}
@@ -477,11 +494,11 @@ const App: React.FC = () => {
                                                     data={[{ name: 'border', value: 100 }]}
                                                     cx="50%"
                                                     cy="50%"
-                                                    outerRadius={120}
-                                                    innerRadius={120}
+                                                    outerRadius={130}
+                                                    innerRadius={130}
                                                     dataKey="value"
                                                 >
-                                                    <Cell fill="none" stroke="#ffffff" strokeWidth={3} />
+                                                    <Cell fill="none" stroke="#ffffff99" strokeWidth={2} />
                                                 </Pie>
                                                 {/* 2024年环形图（外层） */}
                                                 <Pie
@@ -490,14 +507,14 @@ const App: React.FC = () => {
                                                     cy="50%"
                                                     labelLine={false}
                                                     outerRadius={160}
-                                                    innerRadius={110}
+                                                    innerRadius={115}
                                                     dataKey="value"
                                                     nameKey="name"
                                                     type="2024"
                                                     label={false}
                                                 >
                                                     {VISUALIZATION_DATA.healthExpenditure[2024].map((entry, index) => (
-                                                        <Cell key={`cell-2024-${index}`} fill={entry.color} stroke="#ffffff" strokeWidth={2} />
+                                                        <Cell key={`cell-2024-${index}`} fill={entry.color} stroke="#ffffff99" strokeWidth={2} />
                                                     ))}
                                                 </Pie>
                                                 {/* 为两个环形图分别添加Tooltip */}
@@ -520,36 +537,8 @@ const App: React.FC = () => {
                                             </PieChart>
                                         </ResponsiveContainer>
                                     </div>
-                                    
-                                    {/* 图例和总费用说明 */}
-                                    <div className="mt-8 flex flex-col items-center gap-4">
-                                        <div className="flex gap-8">
-                                            <div className="text-center">
-                                                <h4 className="text-lg text-white font-semibold">2009年</h4>
-                                                <p className="text-sm text-slate-400">卫生总费用：17541.92亿元</p>
-                                            </div>
-                                            <div className="text-center">
-                                                <h4 className="text-lg text-white font-semibold">2024年</h4>
-                                                <p className="text-sm text-slate-400">卫生总费用：90895.55亿元</p>
-                                            </div>
-                                        </div>
-                                        
-                                        {/* 添加图例 */}
-                                        <div className="flex flex-wrap justify-center gap-6 mt-4">
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-4 h-4 rounded-full bg-blue-500"></div>
-                                                <span className="text-slate-300 text-sm">政府卫生支出</span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-4 h-4 rounded-full bg-green-500"></div>
-                                                <span className="text-slate-300 text-sm">社会卫生支出</span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <div className="w-4 h-4 rounded-full bg-yellow-500"></div>
-                                                <span className="text-slate-300 text-sm">个人现金支出</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                
+
                                 </div>
                             </div>
                         )}
@@ -581,9 +570,63 @@ const App: React.FC = () => {
         </div>
       </section>
 
+      {/* 5. Education Section */}
+      <section id={SECTIONS.EDU.id} className="min-h-screen py-24 px-4 md:px-12 max-w-7xl mx-auto flex flex-col md:flex-row gap-12 items-center">
+        <div className="md:w-1/3 space-y-6">
+            <h2 className="text-3xl font-bold text-white border-l-8 border-orange-500 pl-4">{SECTIONS.EDU.title}</h2>
+            <h3 className="text-xl text-orange-400 font-serif">{SECTIONS.EDU.subtitle}</h3>
+              <p className="text-slate-400 leading-relaxed text-justify">
+                近十年各省高考报名规模的变化，是“以人民为中心”伟大实践的缩影。广东等人口流入大省，因<span className="text-orange-400">异地高考政策</span>惠及超百万随迁子女，报名人数持续增长；<span className="text-orange-400">职教高考</span>（占高职招生超60%）为学子开辟多元路径。国家通过各类<span className="text-orange-400">专项计划</span>和 <span className="text-orange-400">“县中振兴”政策</span> ，定向增加农村和贫困地区招生名额，提升中西部教育质量，保障<span className="text-orange-400">教育机会公平</span>。
+              </p>
+              <p className="text-slate-500 text-sm italic">
+                {SECTIONS.EDU.desc2}
+            </p >
+            <div className="mt-2 flex gap-3">
+              <button
+                onClick={() =>
+                  setGaokaoIndex(i =>
+                    gaokaoLength ? (i - 1 + gaokaoLength) % gaokaoLength : Math.max(0, i - 1)
+                  )
+                }
+                className="px-3 py-1 rounded-md border text-sm transition-colors bg-slate-800 text-slate-200 border-slate-700"
+              >
+                上一年
+              </button>
+              <button
+                onClick={() => setGaokaoPaused(p => !p)}
+                className={`px-3 py-1 rounded-md border text-sm transition-colors ${
+                  !gaokaoPaused ? 'bg-red-600 text-white border-red-700' : 'bg-slate-700 text-white border-slate-600'
+                }`}
+              >
+                {!gaokaoPaused ? '暂停' : '启动'}
+              </button>
+              <button
+                onClick={() =>
+                  setGaokaoIndex(i =>
+                    gaokaoLength ? (i + 1) % gaokaoLength : i + 1
+                  )
+                }
+                className="px-3 py-1 rounded-md border text-sm transition-colors bg-slate-800 text-slate-200 border-slate-700"
+              >
+                下一年
+              </button>
+            </div>
+        </div>
+        <div className="md:w-2/3 w-full">
+            <ChartWrapper title="近十年(2015-2025)各省高考实际参考人数统计" heightClass="h-[800px]">
+              <GaokaoBarRace
+                paused={gaokaoPaused}
+                index={gaokaoIndex}
+                onIndexChange={setGaokaoIndex}
+                onSeriesLengthChange={setGaokaoLength}
+              />
+            </ChartWrapper>
+        </div>
+      </section>
+
       {/* Footer */}
-      <footer className="py-12 text-center text-slate-600 border-t border-slate-800 bg-slate-950">
-        <p className="text-sm">数据来源：中国国家统计局，世界银行。</p>
+      <footer className="py-12 text-center font-bold text-lightgrey border-t border-slate-800 bg-slate-950">
+        <p className="text-2xl">作者：麻馨月 黄佳佳 赵珍</p>
 
       </footer>
     </div>
