@@ -25,6 +25,8 @@ const App: React.FC = () => {
   // Animation state for the intro
   const [showIntro, setShowIntro] = useState(false);
   const [animationProgress, setAnimationProgress] = useState(100);
+  // Carousel state for west-east cooperation
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
     setShowIntro(true);
@@ -85,15 +87,18 @@ const App: React.FC = () => {
             <p className="text-slate-400 leading-relaxed text-justify">
                 {SECTIONS.ECONOMY.desc}
             </p>
+            <p className="text-slate-500 text-sm italic">
+                {SECTIONS.ECONOMY.desc2}
+            </p>
             <div className="p-4 bg-slate-900/50 border border-slate-700 rounded-lg">
-                <span className="block text-xs text-slate-500 mb-1">2023 GDP总量</span>
-                <span className="text-3xl font-mono text-white font-bold">126.06</span>
-                <span className="text-sm text-slate-400 ml-2">万亿元 (Trillion RMB)</span>
+                <span className="block text-xs text-slate-500 mb-1">2024 GDP总量</span>
+                <span className="text-3xl font-mono text-white font-bold">134.91</span>
+                <span className="text-sm text-slate-400 ml-2">万亿元</span>
             </div>
         </div>
         
         <div className="md:w-2/3 w-full">
-            <ChartWrapper title="GDP Growth Trend (1978-2023)">
+            <ChartWrapper title="GDP增长趋势(1978-2024)">
                 <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={VISUALIZATION_DATA.gdp} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                         <defs>
@@ -120,7 +125,7 @@ const App: React.FC = () => {
                         <Line 
                             type="monotone" 
                             dataKey="growthRate" 
-                            name="Growth Rate (%)" 
+                            name="增长率(%)" 
                             unit="%"
                             stroke={chartColor.secondary} 
                             strokeWidth={2}
@@ -133,64 +138,122 @@ const App: React.FC = () => {
       </section>
 
       {/* 2. Poverty Section */}
-      <section id={SECTIONS.POVERTY.id} className="min-h-screen py-24 px-4 md:px-12 max-w-7xl mx-auto flex flex-col md:flex-row-reverse gap-12 items-center bg-gradient-to-br from-slate-900 via-slate-900 to-red-950/30 rounded-3xl">
+      <section id={SECTIONS.POVERTY.id} className="min-h-screen py-24 px-4 md:px-12 max-w-7xl mx-auto flex flex-col md:flex-row-reverse gap-12 items-center">
+        {/* 文字内容区域 */}
         <div className="md:w-1/3 space-y-6">
             <h2 className="text-3xl font-bold text-white border-l-8 border-yellow-500 pl-4">{SECTIONS.POVERTY.title}</h2>
-            <h3 className="text-xl text-red-400 font-serif">{SECTIONS.POVERTY.subtitle}</h3>
+            <h3 className="text-xl text-red-400 font-serif">{SECTIONS.POVERTY.carousel[currentSlide].subtitle}</h3>
             <p className="text-slate-400 leading-relaxed text-justify">
-                {SECTIONS.POVERTY.desc}
+                {SECTIONS.POVERTY.carousel[currentSlide].desc}
             </p>
-             <div className="grid grid-cols-2 gap-4">
-                 <div className="p-4 bg-red-900/20 border border-red-900/50 rounded-lg text-center">
-                    <span className="block text-xs text-red-300 mb-1">2020贫困人口</span>
-                    <span className="text-2xl font-mono text-white font-bold">0</span>
-                 </div>
-                 <div className="p-4 bg-blue-900/20 border border-blue-900/50 rounded-lg text-center">
-                    <span className="block text-xs text-blue-300 mb-1">2020城镇化率</span>
-                    <span className="text-2xl font-mono text-white font-bold">63.9%</span>
-                 </div>
-             </div>
+            <p className="text-slate-500 text-sm italic">
+                {SECTIONS.POVERTY.carousel[currentSlide].desc2}
+            </p>
+            
+            {/* 轮播指示器 */}
+            <div className="flex gap-2 justify-center">
+                {SECTIONS.POVERTY.carousel.map((item, index) => (
+                    <button
+                        key={item.id}
+                        className={`w-3 h-3 rounded-full transition-all duration-300 ${index === currentSlide ? 'bg-yellow-500 w-8' : 'bg-slate-500 hover:bg-slate-400'}`}
+                        onClick={() => setCurrentSlide(index)}
+                        aria-label={`View slide ${index + 1}`}
+                    />
+                ))}
+            </div>
         </div>
 
-        <div className="md:w-2/3 w-full flex flex-col gap-8">
-            <ChartWrapper title="Poverty Reduction & Urbanization (2012-2020)">
-                <ResponsiveContainer width="100%" height="100%">
-                    <ComposedChart data={VISUALIZATION_DATA.poverty} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
-                        <CartesianGrid stroke="#334155" strokeDasharray="3 3" vertical={false} />
-                        <XAxis dataKey="year" stroke="#94a3b8" />
-                        <YAxis yAxisId="left" stroke={chartColor.secondary} label={{ value: '贫困人口 (百万人)', angle: -90, position: 'insideLeft', fill: chartColor.secondary, style: {textAnchor: 'middle'} }} />
-                        <YAxis yAxisId="right" orientation="right" stroke={chartColor.tertiary} unit="%" />
-                        <Tooltip content={<CustomTooltip />} />
-                        <Legend />
-                        <Bar 
-                            yAxisId="left" 
-                            dataKey="population" 
-                            name="Rural Poverty Population" 
-                            unit="m"
-                            barSize={30} 
-                            fill={chartColor.secondary}
-                            radius={[4, 4, 0, 0]}
-                            animationDuration={1500}
-                        />
-                        <Line 
-                            yAxisId="right" 
-                            type="monotone" 
-                            dataKey="urbanization" 
-                            name="Urbanization Rate" 
-                            unit="%"
-                            stroke={chartColor.tertiary} 
-                            strokeWidth={3}
-                            dot={{r: 4, fill: chartColor.tertiary, strokeWidth: 2, stroke: '#fff'}}
-                            animationDuration={2000}
-                        />
-                    </ComposedChart>
-                </ResponsiveContainer>
-            </ChartWrapper>
-            <ChartWrapper title="东西部帮扶项目流向地图">
-              <div style={{ width: '100%', height: 600 }}>
-                <MinshengMap />
-              </div>
-            </ChartWrapper>
+        {/* 轮播图区域 */}
+        <div className="md:w-2/3 w-full relative bg-slate-800/50 rounded-2xl overflow-hidden border border-slate-700">
+            {/* 轮播内容 */}
+            <div className="h-[500px]">
+                {SECTIONS.POVERTY.carousel.map((item, index) => (
+                    <div 
+                        key={item.id} 
+                        className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${index === currentSlide ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+                        style={{
+                            pointerEvents: index === currentSlide ? 'auto' : 'none',
+                            zIndex: index === currentSlide ? 10 : 1
+                        }}
+                    >
+                        {/* 脱贫攻坚图 */}
+                        {item.type === 'povertyChart' && (
+                            <div className="glass-panel p-6 rounded-xl shadow-lg w-full h-full flex flex-col transition-all duration-300 hover:shadow-red-900/20">
+                                <h3 className="text-xl font-bold mb-6 text-yellow-500 border-l-4 border-red-600 pl-3">
+                                    {item.title}
+                                </h3>
+                                <div className="w-full h-[420px]">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <ComposedChart data={VISUALIZATION_DATA.poverty} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                                            <CartesianGrid stroke="#334155" strokeDasharray="3 3" vertical={false} />
+                                            <XAxis dataKey="year" stroke="#94a3b8" />
+                                            <YAxis yAxisId="left" stroke={chartColor.secondary} label={{ value: '贫困人口 (百万人)', angle: -90, position: 'insideLeft', fill: chartColor.secondary, style: {textAnchor: 'middle'} }} />
+                                            <YAxis yAxisId="right" orientation="right" stroke={chartColor.tertiary} unit="%" />
+                                            <Tooltip content={<CustomTooltip />} />
+                                            <Legend />
+                                            <Bar 
+                                                yAxisId="left" 
+                                                dataKey="population" 
+                                                name="农村贫困人口" 
+                                                unit="百万"
+                                                barSize={30} 
+                                                fill={chartColor.secondary}
+                                                radius={[4, 4, 0, 0]}
+                                                animationDuration={1500}
+                                            />
+                                            <Line 
+                                                yAxisId="right" 
+                                                type="monotone" 
+                                                dataKey="urbanization" 
+                                                name="城镇化率" 
+                                                unit="%"
+                                                stroke={chartColor.tertiary} 
+                                                strokeWidth={3}
+                                                dot={{r: 4, fill: chartColor.tertiary, strokeWidth: 2, stroke: '#fff'}}
+                                                animationDuration={2000}
+                                            />
+                                        </ComposedChart>
+                                    </ResponsiveContainer>
+                                </div>
+                            </div>
+                        )}
+                        
+                        {/* 东西部帮扶流向地图 */}
+                        {item.type === 'map' && (
+                            <div className="glass-panel p-6 rounded-xl shadow-lg w-full h-full flex flex-col transition-all duration-300 hover:shadow-red-900/20">
+                                <h3 className="text-xl font-bold mb-6 text-yellow-500 border-l-4 border-red-600 pl-3">
+                                    {item.title}
+                                </h3>
+                                <div className="w-full h-[420px]">
+                                    <MinshengMap />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                ))}
+            </div>
+            
+            {/* 左右切换按钮 */}
+            <button 
+                className="absolute left-4 top-1/2 -translate-y-1/2 bg-slate-800/80 hover:bg-slate-700 text-white p-2 rounded-full border border-slate-600 transition-all"
+                onClick={() => setCurrentSlide((prev) => (prev === 0 ? SECTIONS.POVERTY.carousel.length - 1 : prev - 1))}
+                aria-label="Previous slide"
+                style={{ zIndex: 20 }}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m15 18-6-6 6-6"/>
+                </svg>
+            </button>
+            <button 
+                className="absolute right-4 top-1/2 -translate-y-1/2 bg-slate-800/80 hover:bg-slate-700 text-white p-2 rounded-full border border-slate-600 transition-all"
+                onClick={() => setCurrentSlide((prev) => (prev === SECTIONS.POVERTY.carousel.length - 1 ? 0 : prev + 1))}
+                aria-label="Next slide"
+                style={{ zIndex: 20 }}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="m9 18 6-6-6-6"/>
+                </svg>
+            </button>
         </div>
       </section>
 
@@ -202,10 +265,13 @@ const App: React.FC = () => {
             <p className="text-slate-400 leading-relaxed text-justify">
                 {SECTIONS.TECH.desc}
             </p>
+            <p className="text-slate-500 text-sm italic">
+                {SECTIONS.TECH.desc2}
+            </p>
         </div>
 
         <div className="md:w-2/3 w-full">
-            <ChartWrapper title="R&D Expenditure & Patents (2010-2022)">
+            <ChartWrapper title="研发支出与专利申请量 (2012-2024)">
                  <ResponsiveContainer width="100%" height="100%">
                     <ComposedChart data={VISUALIZATION_DATA.tech} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
                         <CartesianGrid stroke="#334155" vertical={false} strokeDasharray="3 3" />
@@ -218,8 +284,8 @@ const App: React.FC = () => {
                             yAxisId="left"
                             type="monotone" 
                             dataKey="expenditure" 
-                            name="R&D Expenditure (Billion RMB)" 
-                            unit="bn"
+                            name="研究与试验发展经费支出 (百亿/元)" 
+                            unit="百亿元"
                             stroke="#8884d8" 
                             fill="#8884d8" 
                             fillOpacity={0.3}
@@ -227,8 +293,8 @@ const App: React.FC = () => {
                         <Bar 
                             yAxisId="right"
                             dataKey="patents" 
-                            name="Patent Applications (Thousands)" 
-                            unit="k"
+                            name="专利申请数 (万/项)" 
+                            unit="万"
                             barSize={20} 
                             fill="#82ca9d" 
                             radius={[4, 4, 0, 0]}
